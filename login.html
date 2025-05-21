@@ -4,11 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Login | Forum</title>
+    <style>
+      .input-group .error {
+        color: red;
+      }
+    </style>
   </head>
   <body>
     <form onsubmit="handleSubmit(event)">
-      <input name="username" type="text" />
-      <input name="password" type="password" />
+      <div class="input-group">
+        <input name="username" type="text" />
+        <p class="error"></p>
+      </div>
+      <div class="input-group">
+        <input name="password" type="password" />
+        <p class="error"></p>
+      </div>
       <button type="submit">Login</button>
     </form>
 
@@ -24,7 +35,16 @@
 
         const { error } = await login(data);
 
-        console.log(error);
+        if (error && error.fields) {
+          const errorFields = Object.entries(error.fields);
+          for (let i = 0; i < errorFields.length; i++) {
+            const [key, value] = errorFields[i];
+
+            document.querySelector(
+              `.input-group input[name='${key}'] + .error`
+            ).innerHTML = value;
+          }
+        }
       }
 
       async function login(data) {
