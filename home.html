@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Web | Forum</title>
+  </head>
+  <body>
+    <header>
+      <p>Hello <span id="user"></span></p>
+    </header>
+
+    <script type="module">
+      import { checkAuth } from "./src/js/check-auth.js";
+
+      const userRef = document.getElementById("user");
+
+      window.onload = async function () {
+        const user = await checkAuth(["superadmin", "admin"]);
+
+        userRef.innerHTML = user.name;
+      };
+    </script>
+  </body>
+</html>
