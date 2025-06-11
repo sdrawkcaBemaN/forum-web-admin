@@ -3,11 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./css/global.css" rel="stylesheet" />
     <title>Admin Web | Forum</title>
   </head>
   <body>
     <header>
-      <p>Hello <span id="user"></span></p>
+      <div class="container">
+        <h1>Hello <span id="user"></span></h1>
+      </div>
+
+      <div class="container">
+
+      </div>
     </header>
 
     <script type="module">
@@ -16,7 +23,7 @@
       const userRef = document.getElementById("user");
 
       window.onload = async function () {
-        const user = await checkAuth(["superadmin", "admin"]);
+        const user = await checkAuth(["superadmin", "admin"], ["verified"]);
 
         userRef.innerHTML = user.name;
       };
