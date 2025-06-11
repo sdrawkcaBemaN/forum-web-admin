@@ -1,20 +1,24 @@
 import { getAuthenticatedUser } from "./api/auth.js";
 
-export async function checkAuth(eligibleRoles = [], status = ["verified"]) {
-  const { data: user } = await getAuthenticatedUser();
-  if (!user) {
+export async function checkAuth(
+  eligibleRoles = [],
+  eligibleStatus = ["verified"]
+) {
+  const { data: admin } = await getAuthenticatedUser();
+  if (!admin) {
     window.location.href = "./login.html";
     return null;
   }
 
-  if (user && !eligibleRoles.includes(user.role)) {
+  if (admin && !eligibleRoles.includes(admin.role)) {
     window.location.href = "./login.html";
     return null;
   }
 
-  if (!user || !status.includes(user.status)) {
+  if (!admin || !eligibleStatus.includes(admin.status)) {
+    window.location.href = "./login.html";
     return null;
   }
 
-  return user;
+  return admin;
 }

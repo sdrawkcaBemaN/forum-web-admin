@@ -38,7 +38,7 @@
           password: formData.get("password"),
         };
 
-        const { error } = await login(data);
+        const { data: admin, error } = await login(data);
 
         if (error && error.fields) {
           const errorFields = Object.entries(error.fields);
@@ -50,7 +50,11 @@
             ).innerHTML = value;
           }
         } else {
-          window.location.href = "./home.html";
+          if (admin.status === "need-verification") {
+            window.location.href = "./update-password.html";
+          } else {
+            window.location.href = "./home.html";
+          }
         }
       }
 

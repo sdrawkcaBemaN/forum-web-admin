@@ -37,13 +37,11 @@ export async function login(data) {
       body: JSON.stringify(data),
     });
 
-    console.log(response.status);
-    console.log(response.headers.entries());
-
     if (response.ok) {
+      const { data } = await response.json();
       return {
         error: null,
-        data: null,
+        data: data,
       };
     } else {
       const error = await response.json();
