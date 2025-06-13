@@ -15,7 +15,12 @@ export async function checkAuth(
     return null;
   }
 
-  if (!admin || !eligibleStatus.includes(admin.status)) {
+  if (admin && !eligibleStatus.includes(admin.status)) {
+    window.location.href = "./update-password.html";
+    return null;
+  }
+
+  if (!admin && !eligibleStatus.includes(admin.status)) {
     window.location.href = "./login.html";
     return null;
   }
