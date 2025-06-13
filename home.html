@@ -10,15 +10,16 @@
     <header>
       <div class="container">
         <h1>Hello <span id="user"></span></h1>
+        <button class="btn primary" onclick="logout()">Logout</button>
       </div>
 
       <div class="container">
 
       </div>
     </header>
-
     <script type="module">
       import { checkAuth } from "./src/js/check-auth.js";
+      import { logout as logoutfn } from "./src/js/api/auth.js"
 
       const userRef = document.getElementById("user");
 
@@ -26,6 +27,14 @@
         const user = await checkAuth(["superadmin", "admin"], ["verified"]);
 
         userRef.innerHTML = user.name;
+      };
+
+      window.logout = async function () {
+        const { error } = await logoutfn();
+
+        if (!error) {
+          window.location.href = "./login.html";
+        }
       };
     </script>
   </body>

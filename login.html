@@ -49,6 +49,8 @@
               `.input-group input[name='${key}'] + .error`
             ).innerHTML = value;
           }
+        } else if (error && error.message) {
+          alert(error.message);
         } else {
           if (admin.status === "need-verification") {
             window.location.href = "./update-password.html";

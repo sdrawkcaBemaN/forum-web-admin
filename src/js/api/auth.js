@@ -57,3 +57,62 @@ export async function login(data) {
     };
   }
 }
+
+export async function logout() {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/auth/admin/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      return {
+        error: null,
+        data: null,
+      };
+    } else {
+      const error = await response.json();
+      return {
+        error: error.error,
+        data: null,
+      };
+    }
+  } catch (error) {
+    return {
+      error: error.message,
+      data: null,
+    };
+  }
+}
+
+export async function updatePassword(data) {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/auth/admin/update-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      const { data } = await response.json();
+      return {
+        error: null,
+        data: data,
+      };
+    } else {
+      const error = await response.json();
+      return {
+        error: error.error,
+        data: null,
+      };
+    }
+  } catch (error) {
+    return {
+      error: error.message,
+      data: null,
+    };
+  }
+}
