@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./css/global.css" rel="stylesheet" />
+    <title>Edit Admin</title>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <form class="container" onsubmit="handleSubmit(event)">
+        <h2>Edit Admin</h2>
+
+        <div class="input-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" />
+          <p class="error"></p>
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" />
+          <p class="error"></p>
+        </div>
+
+        <button type="submit" class="btn primary">Update</button>
+        <button type="button" class="btn outline" onclick="window.location.href='./home.html'">Cancel</button>
+        <button type="button" style="color: red; border: 1px solid red;" class="btn outline" onclick="deleteAdmin()">Delete Admin</button>
+      </form>
+    </main>
+
+    <script type="module">
+      import { checkAuth } from "./src/js/check-auth.js";
+      import { getAdmin, update, deleteAdmin } from "./src/js/api/admin.js";
+
+      const name = document.getElementById("name");
+      const email = document.getElementById("email");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+
+      window.onload = async function () {
+        await checkAuth(["admin", "superadmin"], ["verified"]);
+
+        const { data: admin, error } = await getAdmin(id);
+
+        if (error || !admin) {
+          window.location.href = './home.html';
+        }
+
+        name.value = admin.name;
+        email.value = admin.email;
+      };
+
+      window.handleSubmit = async function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        const dto = {
+          name: formData.get("name"),
+          email: formData.get("email"),
+        };
+
+        const { error } = await update(id, dto);
+
+
+        if (error && error.fields) {
+          const errorFields = Object.entries(error.fields);
+          for (let i = 0; i < errorFields.length; i++) {
+            const [key, value] = errorFields[i];
+            const input = document.querySelector(`input[name="${key}"]`);
+            const errorElement = input?.parentElement.querySelector(".error");
+
+            if (errorElement) {
+              errorElement.innerHTML = value;
+            }
+          }
+        } else if (error && error.message) {
+          alert(error.message);
+        } else {
+          window.location.href = "./home.html";
+        }
+      };
+
+      window.deleteAdmin = async function () {
+        const { error } = await deleteAdmin(id);
+
+        if (error) {
+          alert("Failed to delete admin");
+        } else {
+          alert("Admin deleted");
+          window.location.href = "./home.html";
+        }
+      };
+    </script>
+  </body>
+</html>

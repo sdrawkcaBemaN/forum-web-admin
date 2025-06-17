@@ -1,5 +1,5 @@
 body {
-        background: #000000;
+        background: #ccc;
       }
 
 * {
@@ -19,6 +19,22 @@ body {
       .container .input-group {
         margin-bottom: 18px;
       }
+
+.container.wide {
+  background: #fff;
+  max-width: 1000px;
+  margin: 32px auto;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.container.wide table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
 
 .input-group label {
   display: block;
@@ -44,6 +60,7 @@ body {
   border: 1px solid transparent;
   border-radius: 4px;
   font-size: 1rem;
+  cursor: pointer;
 }
 
 .btn.primary {
@@ -54,13 +71,27 @@ body {
 
 .btn.outline {
   background-color: white;
-  border-color: #0ea5e9;
-  color: #0ea5e9;
+  border: 1px solid #65a30d;
+  color: #65a30d;
+  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
-.btn.text {
+
+.btn.table {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   background-color: white;
-  border-color: white;
-  color: #0ea5e9;
+  color: #65a30d;
+  cursor: pointer;
+  margin: 2px;
+  width: auto;
 }
 
+.btn.table:hover {
+  background-color: #f0f9ff;
+  border-color: #65a30d;
+}

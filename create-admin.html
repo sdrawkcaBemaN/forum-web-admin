@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./css/global.css" rel="stylesheet" />
+  
+  </head>
+  <body>
+    <form class="container" onsubmit="handleSubmit(event)">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input name="username" type="text" />
+        <p class="error"></p>
+      </div>
+      <div class="input-group">
+        <label for="name">Name</label>
+        <input name="name" type="text" />
+        <p class="error"></p>
+      </div>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input name="email" type="email" />
+        <p class="error"></p>
+      </div>
+      
+      <button type="submit" class="btn primary">Register</button>
+    </form>
+    <script type="module">
+      import { createAdmin } from "./src/js/api/admin.js";
+      import { checkAuth } from "./src/js/check-auth.js";
+
+
+      window.onload = async function () {
+        const user = await checkAuth(["superadmin", "admin"], ["verified"]);
+      };
+      
+      async function handleSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        const data = {
+          username: formData.get("username"),
+          name: formData.get("name"),
+          email: formData.get("email"),
+        };
+
+        const { error } = await createAdmin(data);
+
+        if (error && error.fields) {
+          const errorFields = Object.entries(error.fields);
+          for (let i = 0; i < errorFields.length; i++) {
+            const [key, value] = errorFields[i];
+
+            document.querySelector(
+              `.input-group input[name='${key}'] + .error`
+            ).innerHTML = value;
+          }
+        }else if (error && error.message) {
+          alert(error.message);
+        } else{
+          window.location.href = `./home.html`;
+
+        }
+      }
+
+      window.handleSubmit = handleSubmit;
+    </script>
+  </body>
+</html>

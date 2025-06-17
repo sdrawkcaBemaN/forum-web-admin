@@ -13,14 +13,14 @@
         <button class="btn primary" onclick="logout()">Logout</button>
       </div>
 
-      <div class="container">
-        <h2>Admin List</h2>
-        <button onclick="goToCreate()">+ Create Admin</button>
-      </div>
     </header>
 
 
     <main>
+      <div class="container wide">
+
+      <h2>Admin List</h2>
+      <button class= "btn outline"onclick="createAdmin()">+ Create Admin</button>
       <table>
         <thead>
           <tr>
@@ -35,14 +35,14 @@
         </thead>
         <tbody id = "admin-table"></tbody>
       </table>
-
+      </div>
     </main>
 
 
     <script type="module">
       import { checkAuth } from "./src/js/check-auth.js";
-      import { logout as logoutfn } from "./src/js/api/auth.js"
-      import { getAll } from "./src/js/api/auth.js"
+      import { logout } from "./src/js/api/auth.js"
+      import { resetPassword, getAll } from "./src/js/api/admin.js"
 
       const userRef = document.getElementById("user");
       const table = document.getElementById("admin-table")
@@ -59,7 +59,7 @@
         const {data: admins, error} = await getAll()
 
         if(!error){
-          tbody.innerHTML = "";
+          table.innerHTML = "";
           admins.forEach((admin) => {
           const row = document.createElement("tr");
           row.innerHTML = `
@@ -70,17 +70,32 @@
             <td>${new Date(admin.created_at).toLocaleString()}</td>
             <td>${admin.role}</td>
             <td>
-              <button onclick="editAdmin('${admin.id}')">Edit</button>
-              <button onclick="resetPassword('${admin.id}')">Reset Password</button>
+              <a href="./edit-admin.html?id=${admin.id}" class="btn">Edit</a>
+              <button class="btn table" onclick="resetPassword('${admin.id}')">Reset Password</button>
             </td>
           `;
-          tbody.appendChild(row);
+          table.appendChild(row);
         });
         }
       }
 
+      window.createAdmin = function () {
+        window.location.href = "./create-admin.html";
+      };
+
+      window.resetPassword = async function(id){
+        const { error } = await resetPassword(id);
+
+        if(error){
+          alert("Failed to reset password")
+        }else{
+          alert("Password reset")
+        }
+      }
+
+
       window.logout = async function () {
-        const { error } = await logoutfn();
+        const { error } = await logout();
 
         if (!error) {
           window.location.href = "./login.html";
