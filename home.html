@@ -14,20 +14,70 @@
       </div>
 
       <div class="container">
-
+        <h2>Admin List</h2>
+        <button onclick="goToCreate()">+ Create Admin</button>
       </div>
     </header>
+
+
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Email</th>
+            <th>Created At</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id = "admin-table"></tbody>
+      </table>
+
+    </main>
+
+
     <script type="module">
       import { checkAuth } from "./src/js/check-auth.js";
       import { logout as logoutfn } from "./src/js/api/auth.js"
+      import { getAll } from "./src/js/api/auth.js"
 
       const userRef = document.getElementById("user");
+      const table = document.getElementById("admin-table")
 
       window.onload = async function () {
         const user = await checkAuth(["superadmin", "admin"], ["verified"]);
 
         userRef.innerHTML = user.name;
+
+        await loadAdmins()
       };
+
+      async function loadAdmins(){
+        const {data: admins, error} = await getAll()
+
+        if(!error){
+          tbody.innerHTML = "";
+          admins.forEach((admin) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${admin.name}</td>
+            <td>${admin.username}</td>
+            <td>${admin.status}</td>
+            <td>${admin.email}</td>
+            <td>${new Date(admin.created_at).toLocaleString()}</td>
+            <td>${admin.role}</td>
+            <td>
+              <button onclick="editAdmin('${admin.id}')">Edit</button>
+              <button onclick="resetPassword('${admin.id}')">Reset Password</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+        }
+      }
 
       window.logout = async function () {
         const { error } = await logoutfn();

@@ -116,3 +116,30 @@ export async function updatePassword(data) {
     };
   }
 }
+
+export async function getAll(){
+  try {
+    const response = await fetch("http://127.0.0.1:5000/admin/", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      return {
+        error: null,
+        data: result.data,
+      };
+    } else {
+      return {
+        error: result.error,
+        data: null,
+      };
+    }
+  } catch (error) {
+    return {
+      error: error.message,
+      data: null,
+    };
+  }
+}
