@@ -87,14 +87,17 @@ export async function logout() {
 
 export async function updatePassword(data) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/auth/admin/update-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      "http://127.0.0.1:5000/auth/admin/update-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      }
+    );
 
     if (response.ok) {
       const { data } = await response.json();
@@ -116,5 +119,3 @@ export async function updatePassword(data) {
     };
   }
 }
-
-
