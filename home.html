@@ -36,6 +36,24 @@
         <tbody id = "admin-table"></tbody>
       </table>
       </div>
+
+      <div class="container wide">
+        <h2>Users List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Email</th>
+            <th>Created At</th>
+            <th>Ban Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id = "user-table"></tbody>
+      </table>
+      </div>
     </main>
 
 
@@ -43,9 +61,11 @@
       import { checkAuth } from "./src/js/check-auth.js";
       import { logout } from "./src/js/api/auth.js"
       import { resetPassword, getAll } from "./src/js/api/admin.js"
+      import { getUsers, banUser, unbanUser } from "./src/js/api/users.js"
 
       const userRef = document.getElementById("user");
-      const table = document.getElementById("admin-table")
+      const adminTable = document.getElementById("admin-table")
+      const userTable = document.getElementById("user-table");
 
       window.onload = async function () {
         const user = await checkAuth(["superadmin", "admin"], ["verified"]);
@@ -53,13 +73,14 @@
         userRef.innerHTML = user.name;
 
         await loadAdmins()
+        await loadUsers()
       };
 
       async function loadAdmins(){
         const {data: admins, error} = await getAll()
 
         if(!error){
-          table.innerHTML = "";
+          adminTable.innerHTML = "";
           admins.forEach((admin) => {
           const row = document.createElement("tr");
           row.innerHTML = `
@@ -74,9 +95,52 @@
               <button class="btn table" onclick="resetPassword('${admin.id}')">Reset Password</button>
             </td>
           `;
-          table.appendChild(row);
+          adminTable.appendChild(row);
         });
         }
+      }
+//*******************************************************************************
+      async function loadUsers(){
+        const {data: users, error} = await getUsers()
+
+        if(!error){
+          userTable.innerHTML = "";
+          users.forEach((user) => {
+          const row = document.createElement("tr");
+          const isBanned = user.status === "banned";
+          row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.username}</td>
+            <td>${user.status}</td>
+            <td>${user.email}</td>
+            <td>${new Date(user.created_at).toLocaleString()}</td>
+            <td>${user.ban_date}</td>
+            <td>
+              <button class="btn table" onclick="${isBanned ? `unbanUser('${user.id}')` : `banUser('${user.id}')`}">
+            ${isBanned ? "Unban User" : "Ban User"}
+          </button>
+            </td>
+          `;
+          userTable.appendChild(row);
+        });
+        }
+      }
+//*******************************************************************************
+
+      window.banUser = async function(id){
+        const confirmed = confirm("Ban this user?");
+        if (!confirmed) return;
+
+        const { error } = await banUser(id);
+        await loadUsers()
+      }
+
+      window.unbanUser = async function(id){
+        const confirmed = confirm("Unban this user?");
+        if (!confirmed) return;
+
+        const { error } = await unbanUser(id);
+        await loadUsers()
       }
 
       window.createAdmin = function () {
@@ -90,6 +154,7 @@
           alert("Failed to reset password")
         }else{
           alert("Password reset")
+          await loadAdmins()
         }
       }
 
