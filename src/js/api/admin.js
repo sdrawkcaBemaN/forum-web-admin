@@ -20,7 +20,9 @@ export async function getAdmin(id) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -48,7 +50,9 @@ export async function getAll(){
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -82,7 +86,9 @@ export async function createAdmin(data){
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -110,7 +116,9 @@ export async function resetPassword(id) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -142,7 +150,9 @@ export async function update(id, dto) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -170,7 +180,9 @@ export async function deleteAdmin(id){
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }

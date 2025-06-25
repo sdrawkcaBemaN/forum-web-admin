@@ -19,7 +19,9 @@ export async function getUsers() {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -47,7 +49,9 @@ export async function banUser(id) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -76,7 +80,9 @@ export async function unbanUser(id) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }

@@ -19,7 +19,9 @@ export async function getAuthenticatedUser() {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -52,7 +54,9 @@ export async function login(data) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -79,7 +83,9 @@ export async function logout() {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
@@ -114,7 +120,9 @@ export async function updatePassword(data) {
     }
   } catch (error) {
     return {
-      error: error.message,
+      error: {
+        message: error.message,
+      },
       data: null,
     };
   }
