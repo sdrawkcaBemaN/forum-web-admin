@@ -28,27 +28,33 @@ export async function getAdmin(id) {
   }
 }
 
-
-export async function getAll(){
+export async function getAdmins({ page = 1, size = 10 }) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/admin/", {
-      method: "GET",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `http://127.0.0.1:5000/admin?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     const result = await response.json();
+    console.log(result);
     if (response.ok) {
       return {
         error: null,
+        total: result.total,
         data: result.data,
       };
     } else {
       return {
         error: result.error,
+        total: 0,
         data: null,
       };
     }
   } catch (error) {
+    console.log(error);
     return {
       error: {
         message: error.message,
@@ -58,9 +64,7 @@ export async function getAll(){
   }
 }
 
-
-
-export async function createAdmin(data){
+export async function createAdmin(data) {
   try {
     const response = await fetch("http://127.0.0.1:5000/admin/", {
       method: "POST",
@@ -96,10 +100,13 @@ export async function createAdmin(data){
 
 export async function resetPassword(id) {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/admin/${id}/reset-password`, {
-      method: "PATCH",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `http://127.0.0.1:5000/admin/${id}/reset-password`,
+      {
+        method: "PATCH",
+        credentials: "include",
+      }
+    );
 
     const result = await response.json();
 
@@ -158,8 +165,8 @@ export async function update(id, dto) {
   }
 }
 
-export async function deleteAdmin(id){
-    try {
+export async function deleteAdmin(id) {
+  try {
     const response = await fetch(`http://127.0.0.1:5000/admin/${id}`, {
       method: "DELETE",
       credentials: "include",
