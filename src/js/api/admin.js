@@ -126,7 +126,7 @@ export async function resetPassword(id) {
 
 export async function update(id, dto) {
   try {
-    const res = await fetch(`http://127.0.0.1:5000/api/admin/${id}`, {
+    const res = await fetch(`http://127.0.0.1:5000/admin/${id}`, {
       method: "PUT",
       credentials: "include",
       headers: {

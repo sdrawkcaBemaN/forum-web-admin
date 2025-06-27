@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./css/global.css" rel="stylesheet" />
+    <title>Admin Web | Forum</title>
+  </head>
+  <body>
+    <header>
+
+      <div class="container">
+        <h1>Manage Posts</h1>
+      </div>
+      
+
+    </header>
+
+
+    <main>
+      <div class="container wide">
+
+      <h2>Post List</h2>
+      <button class="btn outline" onclick="home()">Home</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Text</th>
+            <th>Hyperlink</th>
+            <th>Tags</th>
+            <th>Created At</th>
+            <th>Created By</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id = "post-table"></tbody>
+      </table>
+      </div>
+
+      
+    </main>
+
+
+    <script type="module">
+      import { checkAuth } from "./src/js/check-auth.js";
+      import { getAll as getAdmins } from "./src/js/api/admin.js"
+      import { getUsers, getUser } from "./src/js/api/users.js"
+      import { getAll as getPosts, blockPost, unblockPost } from "./src/js/api/post.js";
+
+
+      const postTable = document.getElementById("post-table")
+      
+
+      window.onload = async function () {
+        const user = await checkAuth(["superadmin", "admin"], ["verified"]);
+        await loadPosts()
+      };
+
+      async function loadPosts(){
+        const {data: posts, error} = await getPosts()
+        
+
+        if(!error){
+          postTable.innerHTML = "";
+          for(const post of posts) {
+          const {data: user, error: userError} = await getUser(post.user_id);
+          const creator = user.name
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${post.title}</td>
+            <td>${post.text}</td>
+            <td>${post.hyperlink}</td>
+            <td>${post.tags}</td>
+            <td>${new Date(post.created_at).toLocaleString()}</td>
+            <td>${creator}</td>
+            <td>${post.status}</td>
+            <button class="btn outline" onclick="blockPost('${post.id}')">Block</button>
+            <button class="btn outline" onclick="unblockPost('${post.id}')">Unblock</button>
+            </td>
+          `;
+          postTable.appendChild(row);
+        };
+        }
+      }
+
+
+      window.blockPost = async function(id){
+        const reason = prompt("Enter a reason for blocking this post:");
+        
+        const { error } = await blockPost(id, {reason});
+        await loadPosts()
+      }
+
+      window.unblockPost = async function(id){
+        const confirmed = confirm("Unban this user?");
+        if (!confirmed) return;
+
+        const { error } = await unblockPost(id);
+        await loadPosts()
+      }
+
+      window.home = function () {
+        console.log("going home")
+        window.location.href = "./home.html";
+      };
+
+
+      
+    </script>
+  </body>
+</html>
