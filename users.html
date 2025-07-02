@@ -16,16 +16,14 @@
         </button>
       </div>
       <div class="container">
-        <button class="btn primary" onclick="toUsers()">Users table</button>
+        <button class="btn primary" onclick="toAdmins()">Admins table</button>
       </div>
     </header>
 
     <main>
+
       <div class="container wide">
-        <h2>Admin List</h2>
-        <button class="btn outline" onclick="createAdmin()">
-          + Create Admin
-        </button>
+        <h2>Users List</h2>
         <table>
           <thead>
             <tr>
@@ -34,26 +32,24 @@
               <th>Status</th>
               <th>Email</th>
               <th>Created At</th>
-              <th>Role</th>
+              <th>Ban Date</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="admin-table"></tbody>
+          <tbody id="user-table"></tbody>
         </table>
         <div>
           <button id="prev-page" onclick="handlePrev();">&lt;</button>
           <button id="next-page" onclick="handleNext();">&gt;</button>
         </div>
       </div>
-
     </main>
 
     <script type="module">
       import { checkAuth } from "./src/js/check-auth.js";
       import { logout } from "./src/js/api/auth.js";
-      import { resetPassword, getAdmins } from "./src/js/api/admin.js";
+      import { getUsers, banUser, unbanUser } from "./src/js/api/users.js";
 
-      const userRef = document.getElementById("user");
       const searchParams = new URLSearchParams(window.location.search);
       const page = searchParams.get("page")
         ? Number(searchParams.get("page"))
@@ -63,9 +59,8 @@
         : 2;
 
       let total;
-      ;
-      const adminTable = document.getElementById("admin-table");
-      
+      const userRef = document.getElementById("user");
+      const userTable = document.getElementById("user-table");
 
       const prevPageButtonRef = document.getElementById("prev-page");
       const nextPageButtonRef = document.getElementById("next-page");
@@ -75,68 +70,81 @@
 
         userRef.innerHTML = user.name;
 
-        await loadAdmins();
+        await loadUsers();
 
         if (page * size >= total) {
           nextPageButtonRef.style.pointerEvents = "none";
         }
       };
 
-      async function loadAdmins() {
+      //*******************************************************************************
+      async function loadUsers() {
         const {
-          total: adminCount,
-          data: admins,
+          total: userCount,
+          data: users,
           error,
-        } = await getAdmins({
+        } = await getUsers(
           page,
           size,
-        });
+        );
 
-        total = adminCount;
+        total = userCount;
 
         if (!error) {
-          adminTable.innerHTML = "";
-          admins.forEach((admin) => {
+          userTable.innerHTML = "";
+          users.forEach((user) => {
             const row = document.createElement("tr");
+            const isBanned = user.status === "banned";
             row.innerHTML = `
-            <td>${admin.name}</td>
-            <td>${admin.username}</td>
-            <td>${admin.status}</td>
-            <td>${admin.email}</td>
-            <td>${new Date(admin.created_at).toLocaleString()}</td>
-            <td>${admin.role}</td>
+            <td>${user.name}</td>
+            <td>${user.username}</td>
+            <td>${user.status}</td>
+            <td>${user.email}</td>
+            <td>${new Date(user.created_at).toLocaleString()}</td>
+            <td>${user.ban_date}</td>
             <td>
-              <a href="./edit-admin.html?id=${admin.id}" class="btn">Edit</a>
-              <button class="btn table" onclick="resetPassword('${
-                admin.id
-              }')">Reset Password</button>
+              <button class="btn table" onclick="${
+                isBanned ? `unbanUser('${user.id}')` : `banUser('${user.id}')`
+              }">
+            ${isBanned ? "Unban User" : "Ban User"}
+          </button>
             </td>
           `;
-            adminTable.appendChild(row);
+            userTable.appendChild(row);
           });
         }
       }
+      //*******************************************************************************
 
       prevPageButtonRef.addEventListener("click", () => {
         if (page > 1) {
-          window.location.href = `/home.html?page=${page - 1}&$size=${size}`;
+          window.location.href = `/users.html?page=${page - 1}&$size=${size}`;
         }
       });
 
       nextPageButtonRef.addEventListener("click", () => {
         if (page * size < total) {
-          window.location.href = `/home.html?page=${page + 1}&$size=${size}`;
+          window.location.href = `/users.html?page=${page + 1}&$size=${size}`;
         }
       });
 
-      window.toUsers = () => {
-        window.location.href = "./users.html"; 
+      window.banUser = async function (id) {
+        const confirmed = confirm("Ban this user?");
+        if (!confirmed) return;
+
+        const { error } = await banUser(id);
+        await loadUsers();
       };
 
-      window.createAdmin = function () {
-        window.location.href = "./create-admin.html";
+      window.unbanUser = async function (id) {
+        const confirmed = confirm("Unban this user?");
+        if (!confirmed) return;
+
+        const { error } = await unbanUser(id);
+        await loadUsers();
       };
 
+   
       window.resetPassword = async function (id) {
         const { error } = await resetPassword(id);
 
@@ -146,6 +154,10 @@
           alert("Password reset");
           await loadAdmins();
         }
+      };
+
+      window.toAdmins = () => {
+        window.location.href = "./home.html"; 
       };
 
       window.managePosts = function () {

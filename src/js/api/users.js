@@ -1,6 +1,6 @@
-export async function getUsers() {
+export async function getUsers(page = 1, size = 10) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/user/", {
+    const response = await fetch(`http://127.0.0.1:5000/user?page=${page}&size=${size}`, {
       method: "GET",
       credentials: "include",
     });
@@ -9,11 +9,13 @@ export async function getUsers() {
     if (response.ok) {
       return {
         error: null,
+        total: result.total,
         data: result.data,
       };
     } else {
       return {
         error: result.error,
+        total: 0,
         data: null,
       };
     }

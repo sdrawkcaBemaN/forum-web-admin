@@ -45,7 +45,7 @@
 
     <script type="module">
       import { checkAuth } from "./src/js/check-auth.js";
-      import { getAll as getAdmins } from "./src/js/api/admin.js"
+      import { getAdmins } from "./src/js/api/admin.js"
       import { getUsers, getUser } from "./src/js/api/users.js"
       import { getAll as getPosts, blockPost, unblockPost } from "./src/js/api/post.js";
 
@@ -102,7 +102,7 @@
       }
 
       window.home = function () {
-        console.log("going home")
+
         window.location.href = "./home.html";
       };
 
