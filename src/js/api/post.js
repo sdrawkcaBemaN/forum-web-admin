@@ -62,9 +62,9 @@ export async function unblockPost(id) {
   }
 }
 
-export async function getAll() {
+export async function getAll(page = 1, size = 10) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/post/", {
+    const response = await fetch(`http://127.0.0.1:5000/post?page=${page}&size=${size}`, {
       method: "GET",
       credentials: "include",
     });
@@ -73,6 +73,7 @@ export async function getAll() {
     if (response.ok) {
       return {
         error: null,
+        total: result.total,
         data: result.data,
       };
     } else {

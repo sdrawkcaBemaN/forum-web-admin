@@ -32,11 +32,16 @@
             <th>Created At</th>
             <th>Created By</th>
             <th>Status</th>
+            <th>Reason</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id = "post-table"></tbody>
       </table>
+        <div>
+          <button id="prev-page">&lt;</button>
+          <button id="next-page">&gt;</button>
+        </div>
       </div>
 
       
@@ -49,18 +54,39 @@
       import { getUsers, getUser } from "./src/js/api/users.js"
       import { getAll as getPosts, blockPost, unblockPost } from "./src/js/api/post.js";
 
-
+      const searchParams = new URLSearchParams(window.location.search);
+      const page = searchParams.get("page")
+        ? Number(searchParams.get("page"))
+        : 1;
+      const size = searchParams.get("size")
+        ? Number(searchParams.get("size"))
+        : 5;
+      let total
       const postTable = document.getElementById("post-table")
+
+      const prevPageButtonRef = document.getElementById("prev-page");
+      const nextPageButtonRef = document.getElementById("next-page");
       
 
       window.onload = async function () {
         const user = await checkAuth(["superadmin", "admin"], ["verified"]);
         await loadPosts()
+        if (page * size >= total) {
+          nextPageButtonRef.style.pointerEvents = "none";
+        }
       };
 
       async function loadPosts(){
-        const {data: posts, error} = await getPosts()
+        const {
+          total: postCount,
+          data: posts,
+          error,
+        } = await getPosts(
+          page,
+          size,
+        );
         
+        total = postCount
 
         if(!error){
           postTable.innerHTML = "";
@@ -76,6 +102,7 @@
             <td>${new Date(post.created_at).toLocaleString()}</td>
             <td>${creator}</td>
             <td>${post.status}</td>
+            <td>${post.reason}</td>
             <button class="btn outline" onclick="blockPost('${post.id}')">Block</button>
             <button class="btn outline" onclick="unblockPost('${post.id}')">Unblock</button>
             </td>
@@ -85,6 +112,17 @@
         }
       }
 
+      prevPageButtonRef.addEventListener("click", () => {
+        if (page > 1) {
+          window.location.href = `/manage-posts.html?page=${page - 1}&$size=${size}`;
+        }
+      });
+
+      nextPageButtonRef.addEventListener("click", () => {
+        if (page * size < total) {
+          window.location.href = `/manage-posts.html?page=${page + 1}&$size=${size}`;
+        }
+      });
 
       window.blockPost = async function(id){
         const reason = prompt("Enter a reason for blocking this post:");
